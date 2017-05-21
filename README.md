@@ -7,7 +7,7 @@
 
 ## サンプル
 
-https://InabaByakko.github.io/ChangeCharacterToSS/SampleProject/index.html
+https://inababyakko.github.io/ChangeCharacterToSS/SampleProject/index.html
 
 ## ざっくり使い方
 
