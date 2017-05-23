@@ -90,7 +90,7 @@
     return true;
   };
   //----------------------------------------------------
-  // アクター・イベントのノートタグ処理
+  // アクターのノートタグ処理
   DataManager.processCCTSNotetags = function (group) {
     for (var n = 1; n < group.length; n++) {
       var obj = group[n];
@@ -104,7 +104,8 @@
       }
     }
   };
-
+  //----------------------------------------------------
+  // イベントを読み込んだとき、ページが変わったときに処理
   CCTS.Game_Event_refresh = Game_Event.prototype.refresh;
   Game_Event.prototype.refresh = function() {
     var newPageIndex = this._erased ? -1 : this.findProperPageIndex();
@@ -113,10 +114,28 @@
       this.refreshSSChar();
     }
   };
-
+  //----------------------------------------------------
+  // イベントリストの注釈からノートタグを拾ってアニメ名設定
   Game_Event.prototype.refreshSSChar = function() {
-    if (this.page() && this.list() && this.list()[0].code === 108)
-      console.log(this.list());
+    if (this.page() && this.list()) {
+      var isSet = this.list().some(function(command) {
+        if (command.code === 108 || command.code === 408){
+          return command.parameters.some(function(line){
+            if (line.match(CCTS.regexpSSCharName)) {
+              this.ssCharName = String(RegExp.$1);
+              return true;
+            }
+            return false;
+          }, this);
+        }
+        return false;
+      }, this);
+      if (isSet
+       === false)
+        this.ssCharName = '';
+    } else {
+      this.ssCharName = '';
+    }
   };
 
   //-----------------------------------------------------------------------------
@@ -182,6 +201,8 @@
       true);
     var animation = new SsAnimation(ssaData.animation, imageList);
     this._ssSprite.setAnimation(animation);
+    // 通常のBitmapを無効化
+    this.bitmap = new Bitmap(this._ssSprite.getWidth(), this._ssSprite.getHeight());
   };
   //----------------------------------------------------
   // アニメ名変更を検知
@@ -204,6 +225,8 @@
   CCTS.Sprite_Character_setCharacterBitmap = Sprite_Character.prototype.setCharacterBitmap;
   Sprite_Character.prototype.setCharacterBitmap = function () {
     if (!this._ssCharName) {
+      if (this._ssSprite.getAnimation() !== null)
+        this._ssSprite.setAnimation(null);
       return CCTS.Sprite_Character_setCharacterBitmap.call(this);
     }
     this._ssMotionsReady = false;
@@ -240,6 +263,22 @@
         return motion + 'up';
     }
     return 'walk_left';
+  };
+  //----------------------------------------------------
+  // SSアニメが有効のとき幅と高さをSSアニメ基準で返す
+  CCTS.Sprite_Character_patternWidth = Sprite_Character.prototype.patternWidth;
+  Sprite_Character.prototype.patternWidth = function() {
+    if (this._ssSprite.getAnimation() !== null) {
+      return this._ssSprite.getWidth();
+    }
+    return CCTS.Sprite_Character_patternWidth.call(this);
+  };
+  CCTS.Sprite_Character_patternHeight = Sprite_Character.prototype.patternHeight;
+  Sprite_Character.prototype.patternHeight = function() {
+    if (this._ssSprite.getAnimation() !== null) {
+      return this._ssSprite.getHeight();
+    }
+    return CCTS.Sprite_Character_patternHeight.call(this);
   };
 
 })();
