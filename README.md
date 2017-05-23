@@ -30,8 +30,8 @@ https://inababyakko.github.io/ChangeCharacterToSS/SampleProject/index.html
 
 設定したいアクターのメモ欄、またはイベントページの「注釈」コマンド中に、以下のようなタグを入れる
 
-<SSCharName: 読み込みたいアニメーションJSONファイル名(.jsonは抜く)>
-　　　または
+<SSCharName: 読み込みたいアニメーションJSONファイル名(.jsonは抜く)>  
+　　　または  
 <SSキャラ名: 読み込みたいアニメーションJSONファイル名(.jsonは抜く)>
 
 ### 確認
