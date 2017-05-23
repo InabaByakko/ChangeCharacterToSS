@@ -1,14 +1,80 @@
+//=============================================================================
+// ChangeCharacterToSS.js
+//=============================================================================
+
+/*:
+* @plugindesc Replace actors' or events' graphics to animation made by OPTPiX SpriteStudio.
+* @author Inaba Byakko
+* 
+* @param Suffix(walk)
+* @desc An suffix of animation name which means walking motion. Default value is "walk"
+* @default walk
+*
+* @param Suffix(idle)
+* @desc An suffix of animation name which means idling motion. Default value is "idle"
+* @default idle
+*
+* @help
+* ** INFORMATION **
+* This plug-in is depends on other plug-ins "SsPlayerForRPGMV".
+* Please download from following URL and install above this plug-in.
+* https://github.com/InabaByakko/SSPlayerForRPGMV
+* 
+* Plug-in commands:
+*   (none)
+*/
+
+/*:ja
+* @plugindesc サイドビュー戦闘時の敵キャラアニメーションをSpriteStudioアニメーションに差し替えるプラグインです。
+* @author Inaba Byakko
+* 
+* @param アニメ名(移動)
+* @desc キャラクターの移動中に再生されるアニメーション名の接尾詩。デフォルトは"walk"
+* @default walk
+*
+* @param アニメ名(停止)
+* @desc キャラクターの停止中に再生されるアニメーション名の接尾詩。デフォルトは"idle"
+* @default idle
+* 
+* @help
+* ※注意
+* 本プラグインの動作には、依存プラグイン「SsPlayerForRPGMV」
+* が必要です。下のURLからダウンロードの上、本プラグインより
+* 上の位置にインストールしてください。
+* https://github.com/InabaByakko/SSPlayerForRPGMV
+* 
+* 【使い方】
+* ・アクターにグラフィック変更を適用する場合
+*   データベース「アクター」のメモ欄に、以下のようなタグを挿入してください。
+* 
+*   <SSCharName: 読み込みたいアニメーションJSONファイル名(.jsonは抜く)>
+*  例： img/animations/ssas/actor1.json を使用したい場合
+*   <SSCharName: actor1>
+* 
+* プラグインコマンド:
+*   （なし）
+*/
 (function () {
 
   // 依存プラグイン導入チェック
   if (typeof SsSprite !== "function") {
     throw new Error(
       "Dependency plug-in 'SsPlayerForRPGMV' is not installed.");
-  }
+  };
 
   var CCTS = {};
 
   var animationDir = SSP4MV.animationDir;
+
+  // 接尾語収集
+  var parameters = PluginManager.parameters('ChangeCharacterToSS');
+  CCTS.Suffixes = {
+    'walk': String(parameters["Suffix(walk)"] || parameters["アニメ名(移動)"] || 'walk'),
+    'idle': String(parameters["Suffix(idle)"] || parameters["アニメ名(停止)"] || 'idle')
+  };
+
+  // ノートタグ正規表現
+  CCTS.regexpSSCharName = /<(?:SSCharName|SSキャラ名):[ ](.*)>/i
 
   //-----------------------------------------------------------------------------
   // DataManager
@@ -32,11 +98,25 @@
 
       for (var i = 0; i < notedata.length; i++) {
         var line = notedata[i];
-        if (line.match(/<(?:SSCharName):[ ](.*)>/i) || line.match(/<(?:SSキャラ名):[ ](.*)>/i)) {
+        if (line.match(CCTS.regexpSSCharName)) {
           obj.ssCharName = String(RegExp.$1);
         }
       }
     }
+  };
+
+  CCTS.Game_Event_refresh = Game_Event.prototype.refresh;
+  Game_Event.prototype.refresh = function() {
+    var newPageIndex = this._erased ? -1 : this.findProperPageIndex();
+    if (this._pageIndex !== newPageIndex) {
+      CCTS.Game_Event_refresh.call(this);
+      this.refreshSSChar();
+    }
+  };
+
+  Game_Event.prototype.refreshSSChar = function() {
+    if (this.page() && this.list() && this.list()[0].code === 108)
+      console.log(this.list());
   };
 
   //-----------------------------------------------------------------------------
@@ -102,7 +182,7 @@
       true);
     var animation = new SsAnimation(ssaData.animation, imageList);
     this._ssSprite.setAnimation(animation);
-  }
+  };
   //----------------------------------------------------
   // アニメ名変更を検知
   CCTS.Sprite_Character_updateBitmap = Sprite_Character.prototype.updateBitmap;
@@ -148,7 +228,7 @@
   //----------------------------------------------------
   // キャラクターの状態に応じ有効なアニメ名を返す
   Sprite_Character.prototype.getMotionName = function () {
-    var motion = (this._character.checkStop(0) ? 'idle_' : 'walk_');
+    var motion = (this._character.checkStop(0) ? CCTS.Suffixes.idle : CCTS.Suffixes.walk)+'_';
     switch (this._character.direction()) {
       case 2:
         return motion + 'down';
@@ -160,6 +240,6 @@
         return motion + 'up';
     }
     return 'walk_left';
-  }
+  };
 
 })();
