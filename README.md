@@ -15,12 +15,12 @@ https://inababyakko.github.io/ChangeCharacterToSS/SampleProject/index.html
 
 以下の8種類の名前が付いたアニメーションを作成し、JSONに変換して所定の場所へ配置
 
-*　歩行時に再生されるアニメーション4方向
+- 歩行時に再生されるアニメーション4方向
   - walk_down
   - walk_left
   - walk_right
   - walk_up
-* 停止時に再生されるアニメーション4方向
+- 停止時に再生されるアニメーション4方向
   - idle_down
   - idle_left
   - idle_right
