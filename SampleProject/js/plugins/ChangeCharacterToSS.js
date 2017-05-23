@@ -121,7 +121,7 @@
   //----------------------------------------------------
   // イベントを読み込んだとき、ページが変わったときに処理
   CCTS.Game_Event_refresh = Game_Event.prototype.refresh;
-  Game_Event.prototype.refresh = function() {
+  Game_Event.prototype.refresh = function () {
     var newPageIndex = this._erased ? -1 : this.findProperPageIndex();
     if (this._pageIndex !== newPageIndex) {
       CCTS.Game_Event_refresh.call(this);
@@ -130,11 +130,11 @@
   };
   //----------------------------------------------------
   // イベントリストの注釈からノートタグを拾ってアニメ名設定
-  Game_Event.prototype.refreshSSChar = function() {
+  Game_Event.prototype.refreshSSChar = function () {
     if (this.page() && this.list()) {
-      var isSet = this.list().some(function(command) {
-        if (command.code === 108 || command.code === 408){
-          return command.parameters.some(function(line){
+      var isSet = this.list().some(function (command) {
+        if (command.code === 108 || command.code === 408) {
+          return command.parameters.some(function (line) {
             if (line.match(CCTS.regexpSSCharName)) {
               this.ssCharName = String(RegExp.$1);
               return true;
@@ -144,8 +144,7 @@
         }
         return false;
       }, this);
-      if (isSet
-       === false)
+      if (isSet === false)
         this.ssCharName = '';
     } else {
       this.ssCharName = '';
@@ -163,12 +162,22 @@
   //-----------------------------------------------------------------------------
   // Game_Player
   //----------------------------------------------------
-  // 戦闘アクターのSSアニメーションセット
+  // 先頭アクターのSSアニメーションセット
   CCTS.Game_Player_refresh = Game_Player.prototype.refresh;
   Game_Player.prototype.refresh = function () {
     CCTS.Game_Player_refresh.call(this);
     var actor = $gameParty.leader();
     this.ssCharName = actor ? actor.ssCharName() : '';
+  };
+
+  //-----------------------------------------------------------------------------
+  // Game_Follower
+  //----------------------------------------------------
+  // 後続メンバーのSSアニメーションセット
+  CCTS.Game_Follower_refresh = Game_Follower.prototype.refresh;
+  Game_Follower.prototype.refresh = function () {
+    CCTS.Game_Follower_refresh.call(this);
+    this.ssCharName = (this.actor() ? this.actor().ssCharName() : '');
   };
 
   //-----------------------------------------------------------------------------
@@ -265,7 +274,7 @@
   //----------------------------------------------------
   // キャラクターの状態に応じ有効なアニメ名を返す
   Sprite_Character.prototype.getMotionName = function () {
-    var motion = (this._character.checkStop(0) ? CCTS.Suffixes.idle : CCTS.Suffixes.walk)+'_';
+    var motion = (this._character.checkStop(0) ? CCTS.Suffixes.idle : CCTS.Suffixes.walk) + '_';
     switch (this._character.direction()) {
       case 2:
         return motion + 'down';
@@ -281,14 +290,14 @@
   //----------------------------------------------------
   // SSアニメが有効のとき幅と高さをSSアニメ基準で返す
   CCTS.Sprite_Character_patternWidth = Sprite_Character.prototype.patternWidth;
-  Sprite_Character.prototype.patternWidth = function() {
+  Sprite_Character.prototype.patternWidth = function () {
     if (this._ssSprite.getAnimation() !== null) {
       return this._ssSprite.getWidth();
     }
     return CCTS.Sprite_Character_patternWidth.call(this);
   };
   CCTS.Sprite_Character_patternHeight = Sprite_Character.prototype.patternHeight;
-  Sprite_Character.prototype.patternHeight = function() {
+  Sprite_Character.prototype.patternHeight = function () {
     if (this._ssSprite.getAnimation() !== null) {
       return this._ssSprite.getHeight();
     }
