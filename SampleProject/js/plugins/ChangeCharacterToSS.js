@@ -117,6 +117,81 @@
   };
 
   //-----------------------------------------------------------------------------
+  // Game_Actor
+  //----------------------------------------------------
+  // DBにSSキャラが指定されていれば返す
+  Game_Actor.prototype.ssCharName = function () {
+    return this.actor().ssCharName ? this.actor().ssCharName : '';
+  };
+
+  //-----------------------------------------------------------------------------
+  // Game_CharacterBase
+  //----------------------------------------------------
+  // メンバ初期化
+  CCTS.Game_CharacterBase_initMembers = Game_CharacterBase.prototype.initMembers;
+  Game_CharacterBase.prototype.initMembers = function() {
+    CCTS.Game_CharacterBase_initMembers.call(this);
+    this.ssCharName = '';
+    this.requestedSsMotion = '';
+    this._overridedIdleMotion = '';
+    this._overridedWalkMotion = '';
+    this._overridedDashMotion = '';
+  };
+  //----------------------------------------------------
+  // SSアニメーションファイルを変更（移動ルート設定中に使う）
+  Game_CharacterBase.prototype.changeSsAnimation = function(fileName) {
+    this.ssCharName = fileName.replace(/\.json$/i, '');
+  };
+  //----------------------------------------------------
+  // SSアニメーションのモーション（ページ）を１度だけ再生（移動ルート設定中に使う）
+  Game_CharacterBase.prototype.playSsMotion = function(pageName) {
+    if (this.ssCharName === '') {
+      this.requestedSsMotion = '';
+      return;
+    }
+    this.requestedSsMotion = pageName;
+  };
+  //----------------------------------------------------
+  // SSアニメーションの停止中モーション名を変更（移動ルート設定中に使う）
+  Game_CharacterBase.prototype.changeSsIdleMotion = function(pageName) {
+    if (this.ssCharName === '') {
+      return;
+    }
+    this._overridedIdleMotion = pageName;
+  };
+  //----------------------------------------------------
+  // SSアニメーションの移動中モーション名を変更（移動ルート設定中に使う）
+  Game_CharacterBase.prototype.changeSsWalkMotion = function(pageName) {
+    if (this.ssCharName === '') {
+      return;
+    }
+    this._overridedWalkMotion = pageName;
+  };
+  //----------------------------------------------------
+  // SSアニメーションのダッシュ中モーション名を変更（移動ルート設定中に使う）
+  Game_CharacterBase.prototype.changeSsDashMotion = function(pageName) {
+    if (this.ssCharName === '') {
+      return;
+    }
+    this._overridedDashMotion = pageName;
+  };
+  //----------------------------------------------------
+  // SSアニメーションの停止中モーション名を元に戻す（移動ルート設定中に使う）
+  Game_CharacterBase.prototype.resetSsIdleMotion = function() {
+    this._overridedIdleMotion = '';
+  };
+  //----------------------------------------------------
+  // SSアニメーションの移動中モーション名を変更（移動ルート設定中に使う）
+  Game_CharacterBase.prototype.resetSsWalkMotion = function() {
+    this._overridedWalkMotion = '';
+  };
+  //----------------------------------------------------
+  // SSアニメーションのダッシュ中モーション名を変更（移動ルート設定中に使う）
+  Game_CharacterBase.prototype.resetSsDashMotion = function() {
+    this._overridedDashMotion = '';
+  };
+
+  //-----------------------------------------------------------------------------
   // Game_Event
   //----------------------------------------------------
   // イベントを読み込んだとき、ページが変わったときに処理
@@ -149,14 +224,6 @@
     } else {
       this.ssCharName = '';
     }
-  };
-
-  //-----------------------------------------------------------------------------
-  // Game_Actor
-  //----------------------------------------------------
-  // DBにSSキャラが指定されていれば返す
-  Game_Actor.prototype.ssCharName = function () {
-    return this.actor().ssCharName ? this.actor().ssCharName : '';
   };
 
   //-----------------------------------------------------------------------------
@@ -234,6 +301,12 @@
     if (this.isImageChanged()) {
       this._ssCharName = this._character.ssCharName;
       CCTS.Sprite_Character_updateBitmap.call(this);
+    }
+    // ssSpriteにblendColor等の情報を継承
+    if (this._ssSprite && this._ssCharName !== '') {
+        this._ssSprite.setColorTone(this.getColorTone());
+        this._ssSprite.setBlendColor(this.getBlendColor());
+        this._ssSprite.blendMode = this.blendMode;
     }
   };
   //----------------------------------------------------
