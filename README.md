@@ -1,7 +1,6 @@
 # ChangeCharacterToSS
 
 アクターやイベントのアニメーショングラフィックをSpriteStudioのアニメーションに置きかえる  
-(今は先頭アクターのみ)
 
 ざっくり不親切ドキュメント（後でちゃんと書く）
 
@@ -25,6 +24,8 @@ https://inababyakko.github.io/ChangeCharacterToSS/SampleProject/index.html
   - idle_left
   - idle_right
   - idle_up
+
+以上のアニメーション名は後方一致で参照されます。ssaeファイルなどには好きな名前を付けていただいてもかまいません。
 
 ### データベース設定
 
