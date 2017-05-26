@@ -292,15 +292,16 @@
     var animation = new SsAnimation(ssaData.animation, imageList);
     this._ssSprite.setAnimation(animation);
     // 通常のBitmapを無効化
-    this.bitmap = new Bitmap(this._ssSprite.getWidth(), this._ssSprite.getHeight());
+    //this.bitmap = new Bitmap(this._ssSprite.getWidth(), this._ssSprite.getHeight());
   };
   //----------------------------------------------------
   // アニメ名変更を検知
   CCTS.Sprite_Character_updateBitmap = Sprite_Character.prototype.updateBitmap;
   Sprite_Character.prototype.updateBitmap = function () {
-    if (this.isImageChanged()) {
+    CCTS.Sprite_Character_updateBitmap.call(this);
+    if (this._ssCharName !== this._character.ssCharName) {
       this._ssCharName = this._character.ssCharName;
-      CCTS.Sprite_Character_updateBitmap.call(this);
+      this.setCharacterSsData();
     }
     // ssSpriteにblendColor等の情報を継承
     if (this._ssSprite && this._ssCharName !== '') {
@@ -310,20 +311,10 @@
     }
   };
   //----------------------------------------------------
-  // アニメ名が変更されたか
-  CCTS.Sprite_Character_isImageChanged = Sprite_Character.prototype.isImageChanged;
-  Sprite_Character.prototype.isImageChanged = function () {
-    return (CCTS.Sprite_Character_isImageChanged.call(this) ||
-      this._ssCharName !== this._character.ssCharName);
-  };
-  //----------------------------------------------------
-  // SSアニメがある場合はビットマップを無効化しSSアニメをセット
-  CCTS.Sprite_Character_setCharacterBitmap = Sprite_Character.prototype.setCharacterBitmap;
-  Sprite_Character.prototype.setCharacterBitmap = function () {
+  // SSアニメがある場合はアニメーションデータをロード
+  Sprite_Character.prototype.setCharacterSsData = function () {
     if (!this._ssCharName) {
-      if (this._ssSprite.getAnimation() !== null)
-        this._ssSprite.setAnimation(null);
-      return CCTS.Sprite_Character_setCharacterBitmap.call(this);
+      return;
     }
     this._ssMotionsReady = false;
     this.loadSsAnimationSet(this._ssCharName);
@@ -332,17 +323,19 @@
   // アニメーションパターンを更新
   CCTS.Sprite_Character_updateCharacterFrame = Sprite_Character.prototype.updateCharacterFrame;
   Sprite_Character.prototype.updateCharacterFrame = function () {
-    if (!this._ssCharName) {
+    if (!this._ssCharName || !this._ssMotionsReady) {
+      this._ssSprite.setAnimation(null);
       return CCTS.Sprite_Character_updateCharacterFrame.call(this);
     }
-    if (this._ssMotionsReady) {
-      var ssaData = this.getAnimationData(this.getMotionName());
-      if (ssaData && this._playingSsAnimation != ssaData) {
-        this.setSsSprite(ssaData);
-        this._ssSprite.setLoop(0);
-        this._playingSsAnimation = ssaData;
-      }
+    var ssaData = this.getAnimationData(this.getMotionName());
+    if (ssaData && this._playingSsAnimation != ssaData) {
+      this.setSsSprite(ssaData);
+      this._ssSprite.setLoop(0);
+      this._playingSsAnimation = ssaData;
     }
+    this.setFrame(0, 0, 0, this._ssSprite.getHeight());
+    if (this._upperBody) this._upperBody.visible = false;
+    if (this._lowerBody) this._lowerBody.visible = false;
   };
   //----------------------------------------------------
   // キャラクターの状態に応じ有効なアニメ名を返す
