@@ -41,7 +41,4 @@ https://inababyakko.github.io/ChangeCharacterToSS/SampleProject/index.html
 
 ## あとでやる
 
-- ダッシュ時にモーションを変える
 - 上下移動時にモーションを変えない
-- 移動ルートの設定コマンドで再生するアニメーションファイルを変更する
-- 移動ルートの設定コマンドで任意のモーションを一度だけ再生する

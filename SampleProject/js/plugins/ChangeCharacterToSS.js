@@ -13,6 +13,14 @@
 * @param Suffix(idle)
 * @desc An suffix of animation name which means idling motion. Default value is "idle"
 * @default idle
+* 
+* @param UsingDashMotion
+* @desc (On/OFF). Default value is "ON"
+* @default walk
+*
+* @param Suffix(dash)
+* @desc An suffix of animation name which means dashing motion. Default value is "dash"
+* @default dash
 *
 * @help
 * ** INFORMATION **
@@ -35,6 +43,14 @@
 * @param アニメ名(停止)
 * @desc キャラクターの停止中に再生されるアニメーション名の接尾詩。デフォルトは"idle"
 * @default idle
+*
+* @param ダッシュ時にアニメーションを変更する
+* @desc キャラクターのダッシュ移動中に再生するアニメーションを変更するか設定(ON/OFF)。デフォルトは"OFF"
+* @default OFF
+*
+* @param アニメ名(ダッシュ)
+* @desc オプションが有効の時、キャラクターのダッシュ移動中に再生されるアニメーション名の接尾詩。デフォルトは"dash"
+* @default dash
 * 
 * @help
 * ※注意
@@ -62,6 +78,31 @@
 *  して下さい。
 *   一番最初に挿入されたタグの内容が適用されます。
 * 
+* 【移動ルートの設定コマンド中で使うスクリプト】
+*   - this.changeSsAnimation('アニメーションファイル名')
+*     指定したキャラクターの再生するアニメーションのデータファイルを変更します。
+*
+*   - this.playSsMotion('モーション名')
+*     指定したキャラクターのモーションを一度だけ再生します。
+*
+*   - this.changeSsIdleMotion('モーション名')
+*     指定したキャラクターの停止中モーションを、指定した名前に変更します。
+*
+*   - this.changeSsWalkMotion('モーション名')
+*     指定したキャラクターの歩行モーションを、指定した名前に変更します。
+*
+*   - this.changeSsDashMotion('モーション名')
+*     指定したキャラクターのダッシュモーションを、指定した名前に変更します。
+*
+*   - this.resetSsIdleMotion()
+*     指定したキャラクターの停止中モーションを元に戻します。
+*
+*   - this.resetSsWalkMotion()
+*     指定したキャラクターの移動モーションを元に戻します。
+*
+*   - this.resetSsDashMotion()
+*     指定したキャラクターのダッシュモーションを元に戻します。
+*
 * 【プラグインコマンド】
 *   （なし）
 */
@@ -81,8 +122,11 @@
   var parameters = PluginManager.parameters('ChangeCharacterToSS');
   CCTS.Suffixes = {
     'walk': String(parameters["Suffix(walk)"] || parameters["アニメ名(移動)"] || 'walk'),
+    'dash': String(parameters["Suffix(dash)"] || parameters["アニメ名(ダッシュ)"] || 'dash'),
     'idle': String(parameters["Suffix(idle)"] || parameters["アニメ名(停止)"] || 'idle')
   };
+
+  CCTS.UsingDashMotion = String(parameters["UsingDashMotion"] || parameters["ダッシュ時にアニメーションを変更する"] || 'OFF').toUpperCase() === 'ON';
 
   // ノートタグ正規表現
   CCTS.regexpSSCharName = /<(?:SSCharName|SSキャラ名):[ ](.*)>/i
@@ -110,7 +154,7 @@
       for (var i = 0; i < notedata.length; i++) {
         var line = notedata[i];
         if (line.match(CCTS.regexpSSCharName)) {
-          obj.ssCharName = String(RegExp.$1);
+          obj.ssCharName = String(RegExp.$1).replace(/\.json$/i, '');
         }
       }
     }
@@ -190,6 +234,21 @@
   Game_CharacterBase.prototype.resetSsDashMotion = function() {
     this._overridedDashMotion = '';
   };
+  //----------------------------------------------------
+  // 停止中モーション名を取得
+  Game_CharacterBase.prototype.getSsIdleMotion = function() {
+    return (this._overridedIdleMotion === '' ? CCTS.Suffixes.idle : this._overridedIdleMotion);
+  };
+  //----------------------------------------------------
+  // 移動中モーション名を取得
+  Game_CharacterBase.prototype.getSsWalkMotion = function() {
+    return (this._overridedWalkMotion === '' ? CCTS.Suffixes.walk : this._overridedWalkMotion);
+  };
+  //----------------------------------------------------
+  // ダッシュ中モーション名を取得
+  Game_CharacterBase.prototype.getSsDashMotion = function() {
+    return (this._overridedDashMotion === '' ? CCTS.Suffixes.dash : this._overridedDashMotion);
+  };
 
   //-----------------------------------------------------------------------------
   // Game_Event
@@ -211,7 +270,7 @@
         if (command.code === 108 || command.code === 408) {
           return command.parameters.some(function (line) {
             if (line.match(CCTS.regexpSSCharName)) {
-              this.ssCharName = String(RegExp.$1);
+              this.ssCharName = String(RegExp.$1).replace(/\.json$/i, '');
               return true;
             }
             return false;
@@ -257,6 +316,7 @@
     this._playingSsAnimation = null;
     this._ssSprite = new SsSprite(null, 0);
     this.addChild(this._ssSprite);
+    this._playNextSsAnimationOnce = false;
   };
   //----------------------------------------------------
   // JSONファイルを読み出してセット
@@ -277,11 +337,29 @@
   // セット済みデータからアニメページ名を後方一致で探す
   Sprite_Character.prototype.getAnimationData = function (name) {
     var animData = null;
+    var dirName = '';
+    switch (this._character.direction()) {
+      case 2:
+        dirName = '_down'; break;
+      case 4:
+        dirName = '_left'; break;
+      case 6:
+        dirName = '_right'; break;
+      case 8:
+        dirName = '_up'; break;
+    }
     this._ssaData.some(function (data) {
+      // 現在方向のサフィックスが付いたアニメーションがある場合は優先マッチング
+      if ((new RegExp("_" + name + dirName + "$", "i")).test(data.name)) {
+        animData = data;
+        return true;
+      }
       if ((new RegExp("_" + name + "$", "i")).test(data.name)) {
         animData = data;
+        return true;        
       }
-    }, this);
+      return false;      
+    });
     return animData;
   };
   //----------------------------------------------------
@@ -291,8 +369,6 @@
       true);
     var animation = new SsAnimation(ssaData.animation, imageList);
     this._ssSprite.setAnimation(animation);
-    // 通常のBitmapを無効化
-    //this.bitmap = new Bitmap(this._ssSprite.getWidth(), this._ssSprite.getHeight());
   };
   //----------------------------------------------------
   // アニメ名変更を検知
@@ -330,7 +406,17 @@
     var ssaData = this.getAnimationData(this.getMotionName());
     if (ssaData && this._playingSsAnimation != ssaData) {
       this.setSsSprite(ssaData);
-      this._ssSprite.setLoop(0);
+      if (this._playNextSsAnimationOnce) {
+        this._playNextSsAnimationOnce = false;
+        this._ssSprite.setLoop(1);
+        this._ssSprite.setEndCallBack(function(){
+          this._character.requestedSsMotion = '';
+          this.updateCharacterFrame();
+        }.bind(this));
+      }else{
+        this._ssSprite.setLoop(0);
+        this._ssSprite.setEndCallBack(null);
+      }
       this._playingSsAnimation = ssaData;
     }
     this.setFrame(0, 0, 0, this._ssSprite.getHeight());
@@ -340,18 +426,14 @@
   //----------------------------------------------------
   // キャラクターの状態に応じ有効なアニメ名を返す
   Sprite_Character.prototype.getMotionName = function () {
-    var motion = (this._character.checkStop(0) ? CCTS.Suffixes.idle : CCTS.Suffixes.walk) + '_';
-    switch (this._character.direction()) {
-      case 2:
-        return motion + 'down';
-      case 4:
-        return motion + 'left';
-      case 6:
-        return motion + 'right';
-      case 8:
-        return motion + 'up';
+    if (this._character.requestedSsMotion) {
+      var motion = this._character.requestedSsMotion;
+      this._playNextSsAnimationOnce = true;
+    } else {
+      var motion = (this._character.checkStop(1) ? this._character.getSsIdleMotion() : 
+      (CCTS.UsingDashMotion && this._character.isDashing() ? this._character.getSsDashMotion() : this._character.getSsWalkMotion()));
     }
-    return 'walk_left';
+    return motion;
   };
   //----------------------------------------------------
   // SSアニメが有効のとき幅と高さをSSアニメ基準で返す
