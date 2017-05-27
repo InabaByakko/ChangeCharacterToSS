@@ -1,6 +1,6 @@
 [
 {
-"images":["clothes1.png",
+"images":["clothes2.png",
 "face.png",
 "hair.png"],
 "name":"attack_attack",
@@ -1525,7 +1525,7 @@
 }
 ,
 {
-"images":["clothes1.png",
+"images":["clothes2.png",
 "face.png",
 "hair.png"],
 "name":"dash_dash_down",
@@ -2296,7 +2296,7 @@
 }
 ,
 {
-"images":["clothes1.png",
+"images":["clothes2.png",
 "face.png",
 "hair.png"],
 "name":"dash_dash_left",
@@ -3067,7 +3067,7 @@
 }
 ,
 {
-"images":["clothes1.png",
+"images":["clothes2.png",
 "face.png",
 "hair.png"],
 "name":"dash_dash_right",
@@ -3838,7 +3838,7 @@
 }
 ,
 {
-"images":["clothes1.png",
+"images":["clothes2.png",
 "face.png",
 "hair.png"],
 "name":"dash_dash_up",
@@ -4609,7 +4609,7 @@
 }
 ,
 {
-"images":["clothes1.png",
+"images":["clothes2.png",
 "face.png",
 "hair.png"],
 "name":"jump_jump_down",
@@ -6290,7 +6290,7 @@
 }
 ,
 {
-"images":["clothes1.png",
+"images":["clothes2.png",
 "face.png",
 "hair.png"],
 "name":"jump_jump_left",
@@ -7971,7 +7971,7 @@
 }
 ,
 {
-"images":["clothes1.png",
+"images":["clothes2.png",
 "face.png",
 "hair.png"],
 "name":"jump_jump_right",
@@ -9652,7 +9652,7 @@
 }
 ,
 {
-"images":["clothes1.png",
+"images":["clothes2.png",
 "face.png",
 "hair.png"],
 "name":"jump_jump_up",
@@ -11333,7 +11333,7 @@
 }
 ,
 {
-"images":["clothes1.png",
+"images":["clothes2.png",
 "face.png",
 "hair.png"],
 "name":"run_walk_left",
@@ -12800,7 +12800,7 @@
 }
 ,
 {
-"images":["clothes1.png",
+"images":["clothes2.png",
 "face.png",
 "hair.png"],
 "name":"run_walk_right",
@@ -14267,7 +14267,7 @@
 }
 ,
 {
-"images":["clothes1.png",
+"images":["clothes2.png",
 "face.png",
 "hair.png"],
 "name":"stand_idle_left",
@@ -16778,7 +16778,7 @@
 }
 ,
 {
-"images":["clothes1.png",
+"images":["clothes2.png",
 "face.png",
 "hair.png"],
 "name":"stand_idle_right",
@@ -19289,7 +19289,7 @@
 }
 ,
 {
-"images":["clothes1.png",
+"images":["clothes2.png",
 "face.png",
 "hair.png"],
 "name":"stand_down_idle_down",
@@ -21972,7 +21972,7 @@
 }
 ,
 {
-"images":["clothes1.png",
+"images":["clothes2.png",
 "face.png",
 "hair.png"],
 "name":"stand_down_idle_up",
@@ -24225,7 +24225,7 @@
 }
 ,
 {
-"images":["clothes1.png",
+"images":["clothes2.png",
 "face.png",
 "hair.png"],
 "name":"stand_down_walk_down",
@@ -25792,7 +25792,7 @@
 }
 ,
 {
-"images":["clothes1.png",
+"images":["clothes2.png",
 "face.png",
 "hair.png"],
 "name":"stand_down_walk_up",

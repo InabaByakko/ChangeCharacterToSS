@@ -3,5 +3,5 @@
 var $plugins =
 [
 {"name":"SSPlayerForRPGMV","status":true,"description":"SpriteStudioで作成されたアニメーションを再生できるようにするプラグインです。","parameters":{"Animation File Path":"img/animations/ssas"}},
-{"name":"ChangeCharacterToSS","status":true,"description":"サイドビュー戦闘時の敵キャラアニメーションをSpriteStudioアニメーションに差し替えるプラグインです。","parameters":{"アニメ名(移動)":"walk","アニメ名(停止)":"idle"}}
+{"name":"ChangeCharacterToSS","status":true,"description":"サイドビュー戦闘時の敵キャラアニメーションをSpriteStudioアニメーションに差し替えるプラグインです。","parameters":{"アニメ名(移動)":"walk","アニメ名(停止)":"idle","ダッシュ時にアニメーションを変更する":"ON","アニメ名(ダッシュ)":"dash"}}
 ];
