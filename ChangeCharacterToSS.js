@@ -399,8 +399,8 @@
   // アニメーションパターンを更新
   CCTS.Sprite_Character_updateCharacterFrame = Sprite_Character.prototype.updateCharacterFrame;
   Sprite_Character.prototype.updateCharacterFrame = function () {
-    if (!this._ssCharName || !this._ssMotionsReady) {
-      this._ssSprite.setAnimation(null);
+    if (!this._ssSprite || !this._ssCharName || !this._ssMotionsReady) {
+      if (this._ssSprite) this._ssSprite.setAnimation(null);
       return CCTS.Sprite_Character_updateCharacterFrame.call(this);
     }
     var ssaData = this.getAnimationData(this.getMotionName());
