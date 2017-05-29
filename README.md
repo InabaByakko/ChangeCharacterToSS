@@ -2,6 +2,8 @@
 
 アクターやイベントのアニメーショングラフィックをSpriteStudioのアニメーションに置きかえるプラグインです。  
 
+\*\* [English document is under construction.](#) \*\*
+
 ### 注意
 本プラグインの動作には、依存プラグイン「SsPlayerForRPGMV」が必要です。下のURLからダウンロードの上、
 本プラグインより上の位置にインストールしてください。  
@@ -14,8 +16,6 @@ https://github.com/InabaByakko/SSPlayerForRPGMV
 https://inababyakko.github.io/ChangeCharacterToSS/SampleProject/index.html
 
 SampleProject フォルダに上記デモのプロジェクトデータが格納されています。
-
-\*\* [English document is under construction.](#) \*\*
 
 ## 動作環境
 
