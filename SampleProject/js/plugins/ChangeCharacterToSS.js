@@ -33,7 +33,7 @@
 */
 
 /*:ja
-* @plugindesc サイドビュー戦闘時の敵キャラアニメーションをSpriteStudioアニメーションに差し替えるプラグインです。
+* @plugindesc アクターやイベントのアニメーショングラフィックをSpriteStudioのアニメーションに置きかえるプラグインです。
 * @author Inaba Byakko
 * 
 * @param アニメ名(移動)
@@ -113,6 +113,11 @@
     throw new Error(
       "Dependency plug-in 'SsPlayerForRPGMV' is not installed.");
   };
+  // バージョンチェック（高さを取得するメソッドがあるかどうか）
+  if (SsSprite.prototype.getHeight === undefined && SsSprite.prototype.getFrameHeight === undefined) {
+    throw new Error(
+      "'SsPlayerForRPGMV' version 0.4.0 or later will be required.");
+  }
 
   var CCTS = {};
 
@@ -399,8 +404,8 @@
   // アニメーションパターンを更新
   CCTS.Sprite_Character_updateCharacterFrame = Sprite_Character.prototype.updateCharacterFrame;
   Sprite_Character.prototype.updateCharacterFrame = function () {
-    if (!this._ssCharName || !this._ssMotionsReady) {
-      this._ssSprite.setAnimation(null);
+    if (!this._ssSprite || !this._ssCharName || !this._ssMotionsReady) {
+      if (this._ssSprite) this._ssSprite.setAnimation(null);
       return CCTS.Sprite_Character_updateCharacterFrame.call(this);
     }
     var ssaData = this.getAnimationData(this.getMotionName());
@@ -419,7 +424,7 @@
       }
       this._playingSsAnimation = ssaData;
     }
-    this.setFrame(0, 0, 0, this._ssSprite.getHeight());
+    this.setFrame(0, 0, 0, this.patternHeight());
     if (this._upperBody) this._upperBody.visible = false;
     if (this._lowerBody) this._lowerBody.visible = false;
   };
@@ -440,14 +445,16 @@
   CCTS.Sprite_Character_patternWidth = Sprite_Character.prototype.patternWidth;
   Sprite_Character.prototype.patternWidth = function () {
     if (this._ssSprite.getAnimation() !== null) {
-      return this._ssSprite.getWidth();
+      if (SsSprite.prototype.getWidth !== undefined) return this._ssSprite.getWidth();
+      return this._ssSprite.getFrameWidth();
     }
     return CCTS.Sprite_Character_patternWidth.call(this);
   };
   CCTS.Sprite_Character_patternHeight = Sprite_Character.prototype.patternHeight;
   Sprite_Character.prototype.patternHeight = function () {
     if (this._ssSprite.getAnimation() !== null) {
-      return this._ssSprite.getHeight();
+      if (SsSprite.prototype.getHeight !== undefined) return this._ssSprite.getHeight();
+      return this._ssSprite.getFrameHeight();
     }
     return CCTS.Sprite_Character_patternHeight.call(this);
   };
