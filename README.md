@@ -17,6 +17,9 @@ https://inababyakko.github.io/ChangeCharacterToSS/SampleProject/index.html
 
 SampleProject フォルダに上記デモのプロジェクトデータが格納されています。
 
+起動時のSpriteStudioロゴの表示には、SmallOmega様の"BootOpeningDemo"プラグインを使用させていただきました。  
+http://smallomega.com/
+
 ## 動作環境
 
 * SsPlayerForRPGMV ver 0.4.0以降
