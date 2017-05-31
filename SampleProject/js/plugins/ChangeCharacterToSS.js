@@ -435,7 +435,7 @@
       var motion = this._character.requestedSsMotion;
       this._playNextSsAnimationOnce = true;
     } else {
-      var motion = (this._character.checkStop(0) || (this._character.checkStop(-1) && !this._character.isMovementSucceeded()) ? this._character.getSsIdleMotion() :
+      var motion = (this._character.checkStop(0) || !this._character.isMovementSucceeded() ? this._character.getSsIdleMotion() :
         (CCTS.UsingDashMotion && this._character.isDashing() ? this._character.getSsDashMotion() : this._character.getSsWalkMotion()));
     }
     return motion;
