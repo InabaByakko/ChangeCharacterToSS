@@ -178,7 +178,7 @@
   //----------------------------------------------------
   // メンバ初期化
   CCTS.Game_CharacterBase_initMembers = Game_CharacterBase.prototype.initMembers;
-  Game_CharacterBase.prototype.initMembers = function() {
+  Game_CharacterBase.prototype.initMembers = function () {
     CCTS.Game_CharacterBase_initMembers.call(this);
     this.ssCharName = '';
     this.requestedSsMotion = '';
@@ -188,12 +188,12 @@
   };
   //----------------------------------------------------
   // SSアニメーションファイルを変更（移動ルート設定中に使う）
-  Game_CharacterBase.prototype.changeSsAnimation = function(fileName) {
+  Game_CharacterBase.prototype.changeSsAnimation = function (fileName) {
     this.ssCharName = fileName.replace(/\.json$/i, '');
   };
   //----------------------------------------------------
   // SSアニメーションのモーション（ページ）を１度だけ再生（移動ルート設定中に使う）
-  Game_CharacterBase.prototype.playSsMotion = function(pageName) {
+  Game_CharacterBase.prototype.playSsMotion = function (pageName) {
     if (this.ssCharName === '') {
       this.requestedSsMotion = '';
       return;
@@ -202,7 +202,7 @@
   };
   //----------------------------------------------------
   // SSアニメーションの停止中モーション名を変更（移動ルート設定中に使う）
-  Game_CharacterBase.prototype.changeSsIdleMotion = function(pageName) {
+  Game_CharacterBase.prototype.changeSsIdleMotion = function (pageName) {
     if (this.ssCharName === '') {
       return;
     }
@@ -210,7 +210,7 @@
   };
   //----------------------------------------------------
   // SSアニメーションの移動中モーション名を変更（移動ルート設定中に使う）
-  Game_CharacterBase.prototype.changeSsWalkMotion = function(pageName) {
+  Game_CharacterBase.prototype.changeSsWalkMotion = function (pageName) {
     if (this.ssCharName === '') {
       return;
     }
@@ -218,7 +218,7 @@
   };
   //----------------------------------------------------
   // SSアニメーションのダッシュ中モーション名を変更（移動ルート設定中に使う）
-  Game_CharacterBase.prototype.changeSsDashMotion = function(pageName) {
+  Game_CharacterBase.prototype.changeSsDashMotion = function (pageName) {
     if (this.ssCharName === '') {
       return;
     }
@@ -226,32 +226,32 @@
   };
   //----------------------------------------------------
   // SSアニメーションの停止中モーション名を元に戻す（移動ルート設定中に使う）
-  Game_CharacterBase.prototype.resetSsIdleMotion = function() {
+  Game_CharacterBase.prototype.resetSsIdleMotion = function () {
     this._overridedIdleMotion = '';
   };
   //----------------------------------------------------
   // SSアニメーションの移動中モーション名を変更（移動ルート設定中に使う）
-  Game_CharacterBase.prototype.resetSsWalkMotion = function() {
+  Game_CharacterBase.prototype.resetSsWalkMotion = function () {
     this._overridedWalkMotion = '';
   };
   //----------------------------------------------------
   // SSアニメーションのダッシュ中モーション名を変更（移動ルート設定中に使う）
-  Game_CharacterBase.prototype.resetSsDashMotion = function() {
+  Game_CharacterBase.prototype.resetSsDashMotion = function () {
     this._overridedDashMotion = '';
   };
   //----------------------------------------------------
   // 停止中モーション名を取得
-  Game_CharacterBase.prototype.getSsIdleMotion = function() {
+  Game_CharacterBase.prototype.getSsIdleMotion = function () {
     return (this._overridedIdleMotion === '' ? CCTS.Suffixes.idle : this._overridedIdleMotion);
   };
   //----------------------------------------------------
   // 移動中モーション名を取得
-  Game_CharacterBase.prototype.getSsWalkMotion = function() {
+  Game_CharacterBase.prototype.getSsWalkMotion = function () {
     return (this._overridedWalkMotion === '' ? CCTS.Suffixes.walk : this._overridedWalkMotion);
   };
   //----------------------------------------------------
   // ダッシュ中モーション名を取得
-  Game_CharacterBase.prototype.getSsDashMotion = function() {
+  Game_CharacterBase.prototype.getSsDashMotion = function () {
     return (this._overridedDashMotion === '' ? CCTS.Suffixes.dash : this._overridedDashMotion);
   };
 
@@ -361,9 +361,9 @@
       }
       if ((new RegExp("_" + name + "$", "i")).test(data.name)) {
         animData = data;
-        return true;        
+        return true;
       }
-      return false;      
+      return false;
     });
     return animData;
   };
@@ -386,9 +386,9 @@
     }
     // ssSpriteにblendColor等の情報を継承
     if (this._ssSprite && this._ssCharName !== '') {
-        this._ssSprite.setColorTone(this.getColorTone());
-        this._ssSprite.setBlendColor(this.getBlendColor());
-        this._ssSprite.blendMode = this.blendMode;
+      this._ssSprite.setColorTone(this.getColorTone());
+      this._ssSprite.setBlendColor(this.getBlendColor());
+      this._ssSprite.blendMode = this.blendMode;
     }
   };
   //----------------------------------------------------
@@ -414,11 +414,11 @@
       if (this._playNextSsAnimationOnce) {
         this._playNextSsAnimationOnce = false;
         this._ssSprite.setLoop(1);
-        this._ssSprite.setEndCallBack(function(){
+        this._ssSprite.setEndCallBack(function () {
           this._character.requestedSsMotion = '';
           this.updateCharacterFrame();
         }.bind(this));
-      }else{
+      } else {
         this._ssSprite.setLoop(0);
         this._ssSprite.setEndCallBack(null);
       }
@@ -435,8 +435,8 @@
       var motion = this._character.requestedSsMotion;
       this._playNextSsAnimationOnce = true;
     } else {
-      var motion = (this._character.checkStop(1) ? this._character.getSsIdleMotion() : 
-      (CCTS.UsingDashMotion && this._character.isDashing() ? this._character.getSsDashMotion() : this._character.getSsWalkMotion()));
+      var motion = (this._character.checkStop(0) || (this._character.checkStop(-1) && !this._character.isMovementSucceeded()) ? this._character.getSsIdleMotion() : //(this._character.checkStop(0) ? this._character.getSsIdleMotion() : 
+        (CCTS.UsingDashMotion && this._character.isDashing() ? this._character.getSsDashMotion() : this._character.getSsWalkMotion()));
     }
     return motion;
   };
