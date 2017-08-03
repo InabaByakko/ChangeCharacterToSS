@@ -435,8 +435,9 @@
       var motion = this._character.requestedSsMotion;
       this._playNextSsAnimationOnce = true;
     } else {
+      var isDashing = (this._character instanceof Game_Follower ? $gamePlayer.isDashing() : this._character.isDashing());
       var motion = (this._character.checkStop(0) || !this._character.isMovementSucceeded() ? this._character.getSsIdleMotion() :
-        (CCTS.UsingDashMotion && this._character.isDashing() ? this._character.getSsDashMotion() : this._character.getSsWalkMotion()));
+        (CCTS.UsingDashMotion && isDashing ? this._character.getSsDashMotion() : this._character.getSsWalkMotion()));
     }
     return motion;
   };
