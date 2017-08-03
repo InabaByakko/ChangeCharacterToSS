@@ -103,6 +103,13 @@
 *   - this.resetSsDashMotion()
 *     指定したキャラクターのダッシュモーションを元に戻します。
 *
+*  [上記モーション指定スクリプトをパーティメンバーにも実行したい場合]
+*    移動ルート設定の対象を「プレイヤー」に設定し、上記コマンドの「this」を
+*    「this.followers().follower(先頭からの並び順-2)」という記述に
+*    置き換えてください。
+*  例)3番目のメンバーにモーション'walk'を一度だけ再生させる場合
+*    this.followers().follower(1).changeSsAnimation('walk')
+*
 * 【プラグインコマンド】
 *   （なし）
 */
@@ -435,8 +442,9 @@
       var motion = this._character.requestedSsMotion;
       this._playNextSsAnimationOnce = true;
     } else {
+      var isDashing = (this._character instanceof Game_Follower ? $gamePlayer.isDashing() : this._character.isDashing());
       var motion = (this._character.checkStop(0) || !this._character.isMovementSucceeded() ? this._character.getSsIdleMotion() :
-        (CCTS.UsingDashMotion && this._character.isDashing() ? this._character.getSsDashMotion() : this._character.getSsWalkMotion()));
+        (CCTS.UsingDashMotion && isDashing ? this._character.getSsDashMotion() : this._character.getSsWalkMotion()));
     }
     return motion;
   };
