@@ -28,6 +28,15 @@ http://smallomega.com/
 * Ss5ConverterToSSAJSON ver 1.0.2以降
     * https://github.com/SpriteStudio/Ss5ConverterToSSAJSON
 
+## SpriteStudio Starter/Professional (バージョン6) で自作アニメーションを作成する場合
+
+このプラグインは、SpriteStudio **バージョン5** のプロジェクトデータにのみ対応しており、SpriteStudio Starter (バージョン6) で作成されたデータのうち、新機能であるメッシュ・ボーン・デフォームの機能を使用したアニメーションは再生できません。
+
+また、JSONファイル変換ツール Ss5ConverterToSSAJSON を使用する前に、プロジェクトをバージョン「5.8」形式でエクスポートしてから、変換を実行して下さい。
+
+![image](https://user-images.githubusercontent.com/3094590/94986114-ec24cc80-0596-11eb-8373-ccf73cf041b3.png)
+![image](https://user-images.githubusercontent.com/3094590/94986118-f050ea00-0596-11eb-979b-b3c9e76fc376.png)
+
 ## 使い方
 
 ### プロジェクトへの組込み
